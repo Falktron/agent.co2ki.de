@@ -28,7 +28,7 @@ services:
     networks:
       - auto-gpt.tech
       - default
-      
+
   platform:
     container_name: platform-v09
     build:
@@ -54,7 +54,7 @@ services:
       - default
   db:
     image: mysql:8.0
-    container_name: db
+    container_name: db-v09
     restart: always
     build:
       context: ./db
