@@ -1,10 +1,9 @@
 import uuid
-from datetime import datetime
 from typing import Optional, Type, TypeVar
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import Column, String, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+from sqlalchemy.orm import DeclarativeBase
 
 from reworkd_platform.db.meta import meta
 
@@ -13,7 +12,7 @@ class Base(DeclarativeBase):
     """Base for all models."""
 
     metadata = meta
-    id: Mapped[str] = mapped_column(
+    id = Column(
         String,
         primary_key=True,
         default=lambda _: str(uuid.uuid4()),
@@ -30,8 +29,8 @@ class TrackedModel(Base):
 
     __abstract__ = True
 
-    create_date: Mapped[datetime] = mapped_column(
-        DateTime, name="create_date", server_default=func.now(), nullable=False
+    create_date = Column(
+        String, name="create_date", server_default=func.now(), nullable=False
     )
 
     @classmethod

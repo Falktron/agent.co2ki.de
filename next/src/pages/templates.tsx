@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { GetStaticProps } from "next";
+import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import nextI18NextConfig from "../../next-i18next.config.js";
 import { languages } from "../utils/languages";
@@ -22,8 +22,8 @@ const Templates = () => {
 
   return (
     <SidebarLayout>
-      <div className="flex h-full w-full flex-col p-10">
-        <FadeIn initialX={-45} initialY={0} delay={0.1}>
+      <div className="flex flex-col h-full w-full p-10">
+        <FadeIn initialX={-45} initialY={0}>
           <div>
             <h1 className="text-4xl font-bold text-white">Templates</h1>
             <h2 className="mb-4 text-xl font-thin text-white">
@@ -31,9 +31,9 @@ const Templates = () => {
             </h2>
           </div>
         </FadeIn>
-        <FadeIn initialY={45} delay={0.1}>
+        <FadeIn initialY={45}>
           <SearchBar setSearchQuery={setSearchQuery} setCategory={setCategory} />
-          <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center">
             {filteredData.map((model) => (
               <TemplateCard key={model.name + model.description} model={model} />
             ))}

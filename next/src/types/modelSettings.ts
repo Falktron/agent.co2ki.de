@@ -16,7 +16,6 @@ export const MAX_TOKENS: Record<GPTModelNames, number> = {
 
 export interface ModelSettings {
   language: Language;
-  customApiKey: string;
   customModelName: GPTModelNames;
   customTemperature: number;
   customMaxLoops: number;

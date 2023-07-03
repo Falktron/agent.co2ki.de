@@ -1,8 +1,9 @@
 import React from "react";
 import FadeIn from "./motions/FadeIn";
 import Expand from "./motions/expand";
+import { MESSAGE_TYPE_TASK, Task, TASK_STATUS_STARTED } from "../types/agentTypes";
 import { getMessageContainerStyle, getTaskStatusIcon } from "./utils/helpers";
-import { useAgentStore } from "../stores";
+import { useAgentStore, useMessageStore } from "../stores";
 import { FaListAlt, FaTimesCircle } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
 import clsx from "clsx";
@@ -10,8 +11,6 @@ import Input from "./Input";
 import Button from "./Button";
 import { v1 } from "uuid";
 import { AnimatePresence } from "framer-motion";
-import { MESSAGE_TYPE_TASK, Task, TASK_STATUS_STARTED } from "../types/task";
-import { useTaskStore } from "../stores/taskStore";
 
 export interface TaskWindowProps {
   visibleOnMobile?: boolean;
@@ -20,12 +19,12 @@ export interface TaskWindowProps {
 export const TaskWindow = ({ visibleOnMobile }: TaskWindowProps) => {
   const [customTask, setCustomTask] = React.useState("");
   const agent = useAgentStore.use.agent();
-  const tasks = useTaskStore.use.tasks();
-  const addTask = useTaskStore.use.addTask();
+  const tasks = useMessageStore.use.tasks();
+  const addMessage = useMessageStore.use.addMessage();
   const [t] = useTranslation();
 
   const handleAddTask = () => {
-    addTask({
+    addMessage({
       id: v1().toString(),
       taskId: v1().toString(),
       value: customTask,
@@ -38,16 +37,16 @@ export const TaskWindow = ({ visibleOnMobile }: TaskWindowProps) => {
   return (
     <Expand
       className={clsx(
-        "h-full flex-col items-center rounded-2xl border-2 border-white/20 bg-zinc-900 font-mono shadow-2xl",
-        "w-full xl:ml-2 xl:flex xl:w-64 xl:px-1",
+        "flex flex-col items-center rounded-2xl border-2 border-white/20 bg-zinc-900 font-mono shadow-2xl",
+        "w-full xl:w-64 xl:mx-2 xl:flex xl:px-1",
         !visibleOnMobile && "hidden"
       )}
     >
       <div className="sticky top-0 my-1 flex items-center justify-center gap-2 bg-zinc-900 p-2 text-gray-100 ">
         <FaListAlt /> {t("Current tasks")}
       </div>
-      <div className="flex h-full w-full flex-col gap-1 overflow-auto p-1">
-        <div className="flex h-full w-full flex-col gap-2 overflow-auto pr-1">
+      <div className="flex flex-col gap-2 px-1 py-1">
+        <div className="window-heights flex flex-col gap-2 overflow-y-auto pr-1">
           {tasks.length == 0 && (
             <p className="w-full p-2 text-center text-xs text-gray-300">
               This window will display agent tasks as they are created.
@@ -59,7 +58,7 @@ export const TaskWindow = ({ visibleOnMobile }: TaskWindowProps) => {
             ))}
           </AnimatePresence>
         </div>
-        <div className="mt-auto flex flex-row gap-1">
+        <div className="flex flex-row gap-1">
           <Input
             value={customTask}
             onChange={(e) => setCustomTask(e.target.value)}
@@ -80,8 +79,8 @@ export const TaskWindow = ({ visibleOnMobile }: TaskWindowProps) => {
 };
 
 const Task = ({ task, index }: { task: Task; index: number }) => {
-  const isAgentStopped = useAgentStore.use.lifecycle() === "stopped";
-  const deleteTask = useTaskStore.use.deleteTask();
+  const isAgentStopped = useAgentStore.use.isAgentStopped();
+  const deleteTask = useMessageStore.use.deleteTask();
   const isTaskDeletable = task.taskId && !isAgentStopped && task.status === "started";
 
   const handleDeleteTask = () => {

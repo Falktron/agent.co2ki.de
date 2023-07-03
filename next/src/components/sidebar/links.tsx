@@ -1,69 +1,27 @@
-import {
-  FaCog,
-  FaDiscord,
-  FaFileCode,
-  FaGithub,
-  FaHome,
-  FaLinkedin,
-  FaQuestion,
-  FaTwitter,
-} from "react-icons/fa";
-import type { IconType } from "react-icons";
+import { FaDiscord, FaGithub, FaQuestion, FaTwitter } from "react-icons/fa";
 
-type LinkMetadata = {
-  name: string;
-  href: string;
-  icon: IconType;
-  badge?: string;
-  className?: string;
-};
-export const PAGE_LINKS: LinkMetadata[] = [
-  {
-    name: "Home",
-    href: "/",
-    icon: FaHome,
-    className: "group-hover:text-color-secondary",
-  },
-  {
-    name: "Templates",
-    href: "/templates",
-    icon: FaFileCode,
-    badge: "New",
-    className: "transition-transform group-hover:scale-110",
-  },
+export const PAGE_LINKS = [
   {
     name: "Help",
     href: "https://docs.reworkd.ai/",
-    icon: FaQuestion,
-    className: "group-hover:text-red-500",
-  },
-  {
-    name: "Settings",
-    href: "/settings",
-    icon: FaCog,
-    className: "transition-transform group-hover:rotate-90",
+    icon: <FaQuestion className="group-hover:text-red-500" />,
   },
 ];
 
-export const SOCIAL_LINKS: LinkMetadata[] = [
+export const SOCIAL_LINKS = [
   {
     name: "Github",
     href: "https://github.com/reworkd/AgentGPT",
-    icon: FaGithub,
+    icon: <FaGithub className="group-hover:text-violet-600" />,
   },
   {
     name: "Twitter",
     href: "https://twitter.com/ReworkdAI",
-    icon: FaTwitter,
+    icon: <FaTwitter className="group-hover:text-sky-500" />,
   },
   {
     name: "Discord",
     href: "https://discord.gg/gcmNyAAFfV",
-    icon: FaDiscord,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/company/reworkd/",
-    icon: FaLinkedin,
+    icon: <FaDiscord className="group-hover:text-blue-400" />,
   },
 ];

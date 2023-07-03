@@ -1,31 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "next-i18next";
 import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
 import Dialog from "./Dialog";
 
-export default function HelpDialog() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const key = "agentgpt-modal-opened-v0.2";
-    const savedModalData = localStorage.getItem(key);
-
-    setTimeout(() => {
-      if (savedModalData == null) {
-        setShow(true);
-      }
-    }, 1800);
-
-    localStorage.setItem(key, JSON.stringify(true));
-  }, []);
-
+export default function HelpDialog({ show, close }: { show: boolean; close: () => void }) {
   const [t] = useTranslation();
   return (
-    <Dialog
-      header={`${t("WELCOME_TO_AGENT_GPT", { ns: "help" })} 🤖`}
-      isShown={show}
-      close={() => setShow(false)}
-    >
+    <Dialog header={`${t("WELCOME_TO_AGENT_GPT", { ns: "help" })} 🤖`} isShown={show} close={close}>
       <div>
         <p>
           <strong>AgentGPT</strong> {t("INTRODUCING_AGENTGPT", { ns: "help" })}

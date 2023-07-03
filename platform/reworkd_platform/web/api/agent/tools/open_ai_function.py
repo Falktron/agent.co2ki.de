@@ -1,4 +1,4 @@
-from typing import Type, TypedDict
+from typing import List, Type, TypedDict
 
 from reworkd_platform.web.api.agent.tools.tool import Tool
 from reworkd_platform.web.api.agent.tools.tools import get_tool_name
@@ -15,29 +15,37 @@ class FunctionDescription(TypedDict):
     """The parameters of the function."""
 
 
-def get_tool_function(tool: Type[Tool]) -> FunctionDescription:
-    """A function that will return the tool's function specification"""
-    name = get_tool_name(tool)
+def analysis_function(tools: List[Type[Tool]]) -> FunctionDescription:
+    """A function that will return the tool specifications from OpenAI"""
+    tool_names = [get_tool_name(tool) for tool in tools]
+    tool_name_to_description = [
+        f"{get_tool_name(tool)}: {tool.description}" for tool in tools
+    ]
 
     return {
-        "name": name,
-        "description": tool.description,
+        "name": "analysis",
+        "description": (
+            "Return an object for what specific 'action'/'tool' to call based on their descriptions:\n"
+            f"{tool_name_to_description}"
+        ),
         "parameters": {
             "type": "object",
             "properties": {
                 "reasoning": {
                     "type": "string",
                     "description": (
-                        f"Reasoning is how the task will be accomplished with the current function. "
+                        f"You must use one of the tools available to you: {tool_names}"
+                        "This reasoning should be how you will accomplish the task with the provided action."
                         "Detail your overall plan along with any concerns you have."
                         "Ensure this reasoning value is in the user defined langauge "
                     ),
                 },
+                "action": {"type": "string", "enum": tool_names},
                 "arg": {
                     "type": "string",
-                    "description": tool.arg_description,
+                    "description": "The appropriate action argument based on the action type",
                 },
             },
-            "required": ["reasoning", "arg"],
+            "required": ["reasoning", "action", "arg"],
         },
     }

@@ -3,44 +3,69 @@ import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type AutonomousAgent from "../services/agent/autonomous-agent";
+import type { AgentMode, AgentPlaybackControl } from "../types/agentTypes";
+import { AGENT_PAUSE, AUTOMATIC_MODE } from "../types/agentTypes";
 import type { ActiveTool } from "../hooks/useTools";
-import type { AgentLifecycle } from "../services/agent/agent-run-model";
 
-interface AgentSlice {
-  agent: AutonomousAgent | null;
-  lifecycle: AgentLifecycle;
-  setLifecycle: (AgentLifecycle) => void;
-  isAgentThinking: boolean;
-  setIsAgentThinking: (isThinking: boolean) => void;
-  setAgent: (newAgent: AutonomousAgent | null) => void;
-}
+const resetters: (() => void)[] = [];
 
 const initialAgentState = {
   agent: null,
-  lifecycle: "stopped" as const,
-  isAgentThinking: false,
+  isAgentStopped: true,
   isAgentPaused: undefined,
 };
+
+interface AgentSlice {
+  nameInput: string;
+  goalInput: string;
+  setNameInput: (string) => void;
+  setGoalInput: (string) => void;
+
+  agent: AutonomousAgent | null;
+  isAgentStopped: boolean;
+  isAgentPaused: boolean | undefined;
+  agentMode: AgentMode;
+  updateAgentMode: (agentMode: AgentMode) => void;
+  updateIsAgentPaused: (agentPlaybackControl: AgentPlaybackControl) => void;
+  updateIsAgentStopped: () => void;
+  setAgent: (newAgent: AutonomousAgent | null) => void;
+}
 
 interface ToolsSlice {
   tools: Omit<ActiveTool, "active">[];
   setTools: (tools: ActiveTool[]) => void;
 }
 
-const resetters: (() => void)[] = [];
-
 const createAgentSlice: StateCreator<AgentSlice> = (set, get) => {
   resetters.push(() => set(initialAgentState));
   return {
     ...initialAgentState,
-    setLifecycle: (lifecycle: AgentLifecycle) => {
+    nameInput: "",
+    goalInput: "",
+    setNameInput: (nameInput: string) => {
       set(() => ({
-        lifecycle: lifecycle,
+        nameInput: nameInput,
       }));
     },
-    setIsAgentThinking: (isThinking: boolean) => {
+    setGoalInput: (goalInput: string) => {
       set(() => ({
-        isAgentThinking: isThinking,
+        goalInput: goalInput,
+      }));
+    },
+    agentMode: AUTOMATIC_MODE,
+    updateAgentMode: (agentMode) => {
+      set(() => ({
+        agentMode,
+      }));
+    },
+    updateIsAgentPaused: (agentPlaybackControl) => {
+      set(() => ({
+        isAgentPaused: agentPlaybackControl === AGENT_PAUSE,
+      }));
+    },
+    updateIsAgentStopped: () => {
+      set((state) => ({
+        isAgentStopped: !state.agent?.isRunning,
       }));
     },
     setAgent: (newAgent) => {
@@ -77,7 +102,7 @@ export const useAgentStore = createSelectors(
         name: "agent-storage-v2",
         storage: createJSONStorage(() => localStorage),
         partialize: (state) => ({
-          tools: state.tools,
+          agentMode: state.agentMode,
         }),
       }
     )

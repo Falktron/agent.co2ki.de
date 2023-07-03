@@ -11,7 +11,6 @@ from reworkd_platform.schemas import (
     AgentTaskExecute,
     NewTasksResponse,
 )
-from reworkd_platform.web.api.agent.agent_service.agent_service import AgentService
 from reworkd_platform.web.api.agent.agent_service.agent_service_provider import (
     get_agent_service,
 )
@@ -21,8 +20,10 @@ from reworkd_platform.web.api.agent.dependancies import (
     agent_create_validator,
     agent_execute_validator,
     agent_start_validator,
+    get_agent_memory,
 )
 from reworkd_platform.web.api.agent.tools.tools import get_external_tools, get_tool_name
+from reworkd_platform.web.api.memory.memory import AgentMemory
 
 router = APIRouter()
 
@@ -31,33 +32,62 @@ router = APIRouter()
     "/start",
 )
 async def start_tasks(
-    req_body: AgentRun = Depends(agent_start_validator),
-    agent_service: AgentService = Depends(get_agent_service(agent_start_validator)),
+    req_body: AgentRun = Depends(
+        agent_start_validator(
+            example={
+                "goal": "Create business plan for a bagel company",
+                "modelSettings": {
+                    "customModelName": "gpt-3.5-turbo",
+                },
+            },
+        )
+    ),
+    agent_memory: AgentMemory = Depends(get_agent_memory),
 ) -> NewTasksResponse:
-    new_tasks = await agent_service.start_goal_agent(goal=req_body.goal)
+    new_tasks = await get_agent_service(
+        req_body.model_settings, agent_memory
+    ).start_goal_agent(goal=req_body.goal)
     return NewTasksResponse(newTasks=new_tasks, run_id=req_body.run_id)
 
 
 @router.post("/analyze")
 async def analyze_tasks(
-    req_body: AgentTaskAnalyze = Depends(agent_analyze_validator),
-    agent_service: AgentService = Depends(get_agent_service(agent_analyze_validator)),
+    req_body: AgentTaskAnalyze = Depends(agent_analyze_validator()),
+    agent_memory: AgentMemory = Depends(get_agent_memory),
 ) -> Analysis:
-    return await agent_service.analyze_task_agent(
+    return await get_agent_service(
+        req_body.model_settings, agent_memory
+    ).analyze_task_agent(
         goal=req_body.goal,
         task=req_body.task or "",
         tool_names=req_body.tool_names or [],
     )
 
 
+class CompletionResponse(BaseModel):
+    response: str
+
+
 @router.post("/execute")
 async def execute_tasks(
-    req_body: AgentTaskExecute = Depends(agent_execute_validator),
-    agent_service: AgentService = Depends(
-        get_agent_service(validator=agent_execute_validator, streaming=True),
+    req_body: AgentTaskExecute = Depends(
+        agent_execute_validator(
+            example={
+                "goal": "Perform tasks accurately",
+                "task": "Write code to make a platformer",
+                "analysis": {
+                    "reasoning": "I like to write code.",
+                    "action": "code",
+                    "arg": "",
+                },
+            },
+        )
     ),
+    agent_memory: AgentMemory = Depends(get_agent_memory),
 ) -> FastAPIStreamingResponse:
-    return await agent_service.execute_task_agent(
+    return await get_agent_service(
+        req_body.model_settings, agent_memory
+    ).execute_task_agent(
         goal=req_body.goal or "",
         task=req_body.task or "",
         analysis=req_body.analysis or Analysis.get_default_analysis(),
@@ -66,10 +96,12 @@ async def execute_tasks(
 
 @router.post("/create")
 async def create_tasks(
-    req_body: AgentTaskCreate = Depends(agent_create_validator),
-    agent_service: AgentService = Depends(get_agent_service(agent_create_validator)),
+    req_body: AgentTaskCreate = Depends(agent_create_validator()),
+    agent_memory: AgentMemory = Depends(get_agent_memory),
 ) -> NewTasksResponse:
-    new_tasks = await agent_service.create_tasks_agent(
+    new_tasks = await get_agent_service(
+        req_body.model_settings, agent_memory
+    ).create_tasks_agent(
         goal=req_body.goal,
         tasks=req_body.tasks or [],
         last_task=req_body.last_task or "",
