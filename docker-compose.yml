@@ -15,7 +15,7 @@ services:
       - /next/.next
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=default"
+      - "traefik.docker.network=auto-gpt.tech"
       - "traefik.http.routers.nextv09-insecure.rule=Host(`agent.co2ki.de`)"
       - "traefik.http.routers.nextv09-insecure.entrypoints=web"
       - "traefik.http.middlewares.nextv09-redirect-web-secure.redirectscheme.scheme=https"
@@ -29,7 +29,6 @@ services:
     networks:
       - auto-gpt.tech
       - default
-
   platform:
     container_name: platform-v09
     build:
@@ -53,9 +52,10 @@ services:
       - db
     networks:
       - default
+
   db:
     image: mysql:8.0
-    container_name: db-v09
+    container_name: db-nextv09
     restart: always
     build:
       context: ./db
@@ -72,6 +72,7 @@ services:
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
     networks:
       - default
+
   weaviate:
     image: semitechnologies/weaviate:1.19.6
     restart: on-failure:0
@@ -87,16 +88,18 @@ services:
       - weaviate:/var/lib/weaviate
     networks:
       - default
+
   docs:
     build: ./docs
     ports:
-      - "3010:3001"
+      - "3005:3001"
     networks:
       - default
 
 volumes:
   weaviate:
   db_data:
+
 networks:
   auto-gpt.tech:
     external: true
