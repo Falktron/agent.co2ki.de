@@ -60,8 +60,8 @@ export const serverEnv = {
 export const clientSchema = z.object({
     NEXT_PUBLIC_VERCEL_ENV: z.enum(["production", "preview", "development", "test"]).default("development"),
     NEXT_PUBLIC_FF_MOCK_MODE_ENABLED: stringToBoolean().default(false),
-    NEXT_PUBLIC_VERCEL_URL: z.string().default("http://localhost:3000"),
-    NEXT_PUBLIC_BACKEND_URL: z.string().url().default("http://localhost:8000"),
+    NEXT_PUBLIC_VERCEL_URL: z.string().default("https://agent.co2ki.de"),
+    NEXT_PUBLIC_BACKEND_URL: z.string().url().default("https://backend.co2ki.de"),
     NEXT_PUBLIC_MAX_LOOPS: z.coerce.number().default(25),
 });
 
