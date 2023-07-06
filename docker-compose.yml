@@ -37,6 +37,17 @@ services:
     ports:
       - "8099:8000"
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=auto-gpt.tech"
+      - "traefik.http.routers.platform-v09-insecure.rule=Host(`backend.co2ki.de`)"
+      - "traefik.http.routers.platform-v09-insecure.entrypoints=web"
+      - "traefik.http.middlewares.platform-v09-redirect-web-secure.redirectscheme.scheme=https"
+      - "traefik.http.routers.platform-v09-insecure.middlewares=platform-v09-redirect-web-secure"
+      - "traefik.http.routers.platform-v09.rule=Host(`backend.co2ki.de`)"
+      - "traefik.http.routers.platform-v09.entrypoints=websecure"
+      - "traefik.http.routers.platform-v09.tls=true"
+      - "traefik.http.routers.platform-v09.tls.certresolver=myresolver"
     volumes:
       - ./platform:/app/src/
     env_file:
@@ -51,6 +62,7 @@ services:
     depends_on:
       - db
     networks:
+      - auto-gpt.tech
       - default
 
   db:
