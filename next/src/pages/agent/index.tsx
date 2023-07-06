@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import ChatWindow from "../../components/console/ChatWindow";
-import type { Message } from "../../types/agentTypes";
+import type { Message } from "../../types/message";
 import Toast from "../../components/toast";
 import { FaBackspace, FaShare, FaTrash } from "react-icons/fa";
 import { env } from "../../env/client.mjs";
@@ -13,7 +13,9 @@ import { useTranslation } from "next-i18next";
 import { languages } from "../../utils/languages";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import nextI18NextConfig from "../../../next-i18next.config";
-import SidebarLayout from "../../layout/sidebar";
+import DashboardLayout from "../../layout/dashboard";
+import FadeIn from "../../components/motions/FadeIn";
+import { ChatMessage } from "../../components/console/ChatMessage";
 
 const AgentPage: NextPage = () => {
   const [t] = useTranslation();
@@ -39,24 +41,27 @@ const AgentPage: NextPage = () => {
   };
 
   return (
-    <SidebarLayout>
+    <DashboardLayout>
       <div
         id="content"
-        className="flex min-h-screen w-full flex-col items-center justify-center gap-4"
+        className="flex h-screen max-w-full flex-col items-center justify-center gap-3 px-3 pt-7 md:px-10"
       >
-        <ChatWindow
-          messages={messages.filter((m) => m.type !== "thinking")}
-          title={getAgent?.data?.name}
-          className="my-5 flex w-[90%] flex-1"
-          fullscreen
-          visibleOnMobile
-        />
+        <ChatWindow messages={messages} title={getAgent?.data?.name} visibleOnMobile>
+          {messages.map((message, index) => {
+            return (
+              <FadeIn key={`${index}-${message.type}`}>
+                <ChatMessage message={message} />
+              </FadeIn>
+            );
+          })}
+        </ChatWindow>
         <div className="flex flex-row gap-2">
-          <Button icon={<FaBackspace />} onClick={() => void router.push("/")}>
+          <Button icon={<FaBackspace />} loader onClick={() => void router.push("/")}>
             Back
           </Button>
           <Button
             icon={<FaTrash />}
+            loader
             onClick={() => {
               deleteAgent.mutate(agentId);
             }}
@@ -67,6 +72,7 @@ const AgentPage: NextPage = () => {
 
           <Button
             icon={<FaShare />}
+            loader
             onClick={() => {
               void window.navigator.clipboard
                 .writeText(shareLink())
@@ -83,13 +89,13 @@ const AgentPage: NextPage = () => {
           className="bg-gray-950 text-sm"
         />
       </div>
-    </SidebarLayout>
+    </DashboardLayout>
   );
 };
 
 export default AgentPage;
 
-export const getStaticProps: GetStaticProps = async({ locale = "en" }) => {
+export const getStaticProps: GetStaticProps = async ({ locale = "en" }) => {
   const supportedLocales = languages.map((language) => language.code);
   const chosenLocale = supportedLocales.includes(locale) ? locale : "en";
 
