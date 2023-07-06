@@ -91,10 +91,10 @@ const Home: NextPage = () => {
   };
 
   const handleNewAgent = (name: string, goal: string) => {
-    // if (session === null) {
-    //   setShowSignInDialog(false);
-    //   return;
-    // }
+    if (session === null) {
+      setShowSignInDialog(false);
+      return;
+    }
 
     if (agent && agentLifecycle == "paused") {
       agent?.run().catch(console.error);
