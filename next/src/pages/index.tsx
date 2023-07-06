@@ -92,7 +92,7 @@ const Home: NextPage = () => {
 
   const handleNewAgent = (name: string, goal: string) => {
     if (session === null) {
-      setShowSignInDialog(false);
+      setShowSignInDialog(true);
       return;
     }
 
