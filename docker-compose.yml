@@ -24,6 +24,7 @@ services:
       - "traefik.http.routers.nextv09.entrypoints=websecure"
       - "traefik.http.routers.nextv09.tls=true"
       - "traefik.http.routers.nextv09.tls.certresolver=myresolver"
+      - "traefik.http.services.nextv09-insecure.loadbalancer.server.port=3000"
       - "traefik.http.routers.nextv09.middlewares=nextv09_auth"
       - "traefik.http.middlewares.nextv09_auth.basicauth.users=DEA:$$2y$$05$$u6owE6I3Hlmnjx6L9GiF0.Txrr022V20vsbKsUpAtWiq0VWlxn.t."
     networks:
@@ -48,6 +49,7 @@ services:
       - "traefik.http.routers.platform-v09.entrypoints=websecure"
       - "traefik.http.routers.platform-v09.tls=true"
       - "traefik.http.routers.platform-v09.tls.certresolver=myresolver"
+      - "traefik.http.services.platform-v09-insecure.loadbalancer.server.port=8000"
     volumes:
       - ./platform:/app/src/
     env_file:
