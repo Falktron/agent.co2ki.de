@@ -3344,13 +3344,13 @@ anyio = ">=3.0.0"
 
 [[package]]
 name = "weaviate-client"
-version = "3.20.0"
+version = "3.22.0"
 description = "A python native Weaviate client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "weaviate-client-3.20.0.tar.gz", hash = "sha256:27c724596e9d3a4609dc7b7e9e362fc97dcfd9ba25f931c95a177bc60789be8e"},
-    {file = "weaviate_client-3.20.0-py3-none-any.whl", hash = "sha256:7559cb1500a5a22019a32cb55b162e204620179792cdfdd98b81e258c6ca7d96"},
+    {file = "weaviate-client-3.22.0.tar.gz", hash = "sha256:38d0dbe66246bb61f0b9cabafc9cb42d832d7130b3a2d84e2a2b1a7aaa778358"},
+    {file = "weaviate_client-3.22.0-py3-none-any.whl", hash = "sha256:f65401979373ab32705b05a48195f298251e4e619d88c6b61018d32e43bd9deb"},
 ]
 
 [package.dependencies]
@@ -3607,4 +3607,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1172abfa4a30eb8454d796f8467559ac50c3310af6e81d478551a6a0670d7728"
+content-hash = "6c752a99a6fd3e574937c46ceb5ebfe8b00c86653c18d927600a8667e8e5b00b"
